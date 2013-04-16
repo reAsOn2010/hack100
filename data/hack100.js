@@ -39,7 +39,9 @@ var urlMatchData = {
     "login" : "/cstcx/web/index.asp",
     "home" : "/cstcx/web/index_student.asp",
     "changePassword" : "/cstcx/web/login/ChangePwd.asp",
-    "course" : "/cstcx/web/index_cource.asp"
+    "course" : "/cstcx/web/index_cource.asp",
+    "examList": "/cstcx/web/jobexam/ExamList.asp",
+    "examSubmit": "/cstcx/web/jobexam/uploadexamsub.asp",
 };
 
 var LoginPageDealer = function() {
@@ -73,12 +75,48 @@ var LoginPageDealer = function() {
                 );
         $("#btnLogin").click(function() {
             $("#form1").submit();
+            
             setTimeout(function() {
                 window.location.replace("http://10.71.45.100/cstcx/web/index_student.asp?");
             }, 1000);
+            
         });
     };
 
+};
+
+var examSubmitDealer = function() {
+    var fileReg = /.*\.(rar|zip|docx|doc|xlsx|xls|pptx|ppt|txt|pdf|mdb|accdb|htm)/i;
+    var isFileValid = function() {
+        if ($("#fileExam").val().length == 0) {
+            alert("file cannot be empty");
+            return false;
+        }
+        else if ($("#fileExam").val().search(fileReg) == -1) {
+            alert("unsupported file type");
+            return false;
+        }
+        return true;
+    }
+    this.hack = function() {
+        var fuckingVBS = $("#clientEventHandlersVBS").html();
+        var action = fuckingVBS.slice(fuckingVBS.indexOf("document.frmExam.action"),
+                fuckingVBS.indexOf("document.frmExam.target")).split('"')[1];
+        alert(action);
+        $("#btnUpload").click(function() {
+            var $form = $("form[name='frmExam']");
+            $form.attr({
+                "action": action,
+                "target": "ffUpLoad"
+            });
+            if (isFileValid()) {
+                alert($("#fileExam").val());
+                alert($form.attr("action"));
+                alert($form.attr("target"));
+                $form.submit();
+            }
+        });
+    };
 };
 
 var URLDealer = function(url) {
@@ -88,7 +126,7 @@ var URLDealer = function(url) {
     this.search = url.search;
 
     this.hackPage = function() {
-        console.log("in hackpage function");
+        console.log("pathname:" + this.pathname);
         switch(this.pathname) {
             case urlMatchData.index:
                 console.log("\tmatch index");
@@ -105,6 +143,13 @@ var URLDealer = function(url) {
                 break;
             case urlMatchData.course:
                 console.log("\tmatch course");
+                break;
+            case urlMatchData.examList:
+                console.log("\tmatch examList");
+                break;
+            case urlMatchData.examSubmit:
+                console.log("\tmatch examSubmit");
+                new examSubmitDealer().hack();
                 break;
             default:
                 console.log("\tmatch none");
