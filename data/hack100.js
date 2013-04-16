@@ -1,62 +1,58 @@
-//alert("hacked!")
-var urlTestLogin = {
-    "host" : "10.71.45.100",
-    "href" : "http://10.71.45.100/cstcx/web/index.asp?"+
-        "tt=wzh&tn=%CD%F5%D7%DC%BB%D4&Rnd.6779477=.5024539",
-    "search" : "?tt=wzh&tn=%CD%F5%D7%DC%BB%D4&Rnd.6779477=.5024539",
-    "pathname" : "/cstcx/web/index.asp"
-};
-
-var urlTestHome = {
-    "host" : "10.71.45.100",
-    "href" : "http://10.71.45.100/cstcx/web/index_student.asp?Rnd.7055475=.533424",
-    "search" : "?Rnd.7055475=.533424",
-    "pathname" : "/cstcx/web/index_student.asp"
-};
-
-var urlTestChangePassword = {
-    "host" : "10.71.45.100",
-    "href" : "http://10.71.45.100/cstcx/web/login/ChangePwd.asp?rnd=.533424",
-    "search" : "?rnd=.533424",
-    "pathname" : "/cstcx/web/login/ChangePwd.asp"
-};
-
-var urlTestCourse = {
-    "host" : "10.71.45.100",
-    "href" : "http://10.71.45.100/cstcx/web/index_cource.asp?"+
-        "coid=15&coname=计算机体系结构&clsid=14&clsname=12-13计算机体系结构&flag=0&"+
-        "techid=55&kcm=计算机体系结构[2012-2013春夏-王总辉 -12-13计算机体系结构]&df=7",
-
-    "search" : "?coid=15&coname=计算机体系结构&clsid=14&"+
-        "clsname=12-13计算机体系结构&flag=0&techid=55&"+
-        "kcm=计算机体系结构[2012-2013春夏-王总辉 -12-13计算机体系结构]&df=7",
-
-    "pathname" : "/cstcx/web/index_cource.asp"
-};
-
 var urlMatchData = {
     "index" : "/",
     "login" : "/cstcx/web/index.asp",
+    "logout" : "/cstcs/web/login/Logout.asp?Rnd.301948=.7747401",
     "home" : "/cstcx/web/index_student.asp",
     "changePassword" : "/cstcx/web/login/ChangePwd.asp",
     "course" : "/cstcx/web/index_cource.asp",
+    "check" : "/cstcx/web/login/check.asp",
     "examList": "/cstcx/web/jobexam/ExamList.asp",
     "examSubmit": "/cstcx/web/jobexam/uploadexamsub.asp",
+    "progressUpload" : "/cstcx/web/jobexam/Progress_upload.asp",
+};
+
+var UploadPageDealer = function() {
+    this.hack = function() {
+        console.log("\t\tin progress upload page hacker");
+        /* TODO make a redirection to refresh current frame page */
+    }
+}
+
+var CheckPageDealer = function() {
+    this.hack = function() {
+        console.log("\t\tin check page hacker");
+
+        /* if login incorrect, there is an alert */
+        if ($("script").html().search("alert") == -1) {
+            /* top is used to jump out of frame page */
+            window.top.location.replace("http://10.71.45.100/cstcx/web/index_student.asp?");
+        }
+    };
+};
+
+var HomePageDealer = function() {
+    /* modify logout button */
+    this.hack = function() {
+        console.log("\t\tin home page hacker");
+
+    };
 };
 
 var LoginPageDealer = function() {
     this.hack = function(url) {
         console.log("\t\tin login page hacker");
+
+        /* tt = *** */
         var teacher = url.split('?')[1].split('&')[0].split('=')[1];
+        /* Rnd.*******=.******* */
         var rnd = url.split('?')[1].split('&')[2];
-        //console.log(teacher);
-        //console.log(rnd);
 
         $("#form1").attr({
             "action": "login/check.asp?tn=" + teacher + "&" + rnd,
             "target": "checkff"
         });
 
+        /* TODO: use a better way to modify #form1 */
         $("#form1").html(
                 '<table style="font:12px Tahoma;" width="190" height="80px" border="0" cellspacing="0" cellpadding="0" bgcolor="LightBlue">'+
                 '<tbody><tr>'+
@@ -73,20 +69,19 @@ var LoginPageDealer = function() {
                 '</tr>'+
                 '</tbody></table>'
                 );
+
         $("#btnLogin").click(function() {
             $("#form1").submit();
-            
-            setTimeout(function() {
-                window.location.replace("http://10.71.45.100/cstcx/web/index_student.asp?");
-            }, 1000);
-            
         });
     };
 
 };
 
-var examSubmitDealer = function() {
+var ExamSubmitDealer = function() {
+
+    /* regular expression for file type check */
     var fileReg = /.*\.(rar|zip|docx|doc|xlsx|xls|pptx|ppt|txt|pdf|mdb|accdb|htm)/i;
+
     var isFileValid = function() {
         if ($("#fileExam").val().length == 0) {
             alert("file cannot be empty");
@@ -98,11 +93,17 @@ var examSubmitDealer = function() {
         }
         return true;
     }
+
     this.hack = function() {
+        console.log("\t\tin login page hacker");
+
+        /* the url for submission is only in VBScript, find it */
+        /* I find something wrong! */
+        /* the url can be composed using this frame's url */
+        /* TODO: use window.loaction to implement */
         var fuckingVBS = $("#clientEventHandlersVBS").html();
         var action = fuckingVBS.slice(fuckingVBS.indexOf("document.frmExam.action"),
                 fuckingVBS.indexOf("document.frmExam.target")).split('"')[1];
-        alert(action);
         $("#btnUpload").click(function() {
             var $form = $("form[name='frmExam']");
             $form.attr({
@@ -110,9 +111,6 @@ var examSubmitDealer = function() {
                 "target": "ffUpLoad"
             });
             if (isFileValid()) {
-                alert($("#fileExam").val());
-                alert($form.attr("action"));
-                alert($form.attr("target"));
                 $form.submit();
             }
         });
@@ -149,7 +147,15 @@ var URLDealer = function(url) {
                 break;
             case urlMatchData.examSubmit:
                 console.log("\tmatch examSubmit");
-                new examSubmitDealer().hack();
+                new ExamSubmitDealer().hack();
+                break;
+            case urlMatchData.check:
+                console.log("\tmatch check");
+                new CheckPageDealer().hack();
+                break;
+            case urlMatchData.progressUpload:
+                console.log("\tmatch progress upload");
+                new UploadPageDealer().hack();
                 break;
             default:
                 console.log("\tmatch none");
