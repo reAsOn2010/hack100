@@ -1,11 +1,12 @@
 {
     "manifest_version": 2,
     "name": "hack100",
-    "version": "0.1",
+    "version": "0.2",
     "description": "Hack for 10.71.45.100",
     "permissions": ["http://10.71.45.100/*"],
     "content_scripts": [{
         "matches": ["http://10.71.45.100/*"],
+		"all_frames": true,
         "js": ["data/jquery.min.js", "data/hack100.js"]
     }]
 }
