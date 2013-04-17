@@ -15,9 +15,10 @@ ZJU内网10.71.45.100当中有大量的vbscript脚本，导致只有ie内核的�
 
 ***
 特别感谢：
-DanielBlack 提供Chrome插件的wrapper使之能在chrome浏览器上使用
-youngjerky 开发过程当中与我的讨论
 
+DanielBlack 提供Chrome插件的wrapper使之能在chrome浏览器上使用
+
+youngjerky 开发过程当中与我的讨论
 
 ***
 开发环境：
@@ -32,6 +33,7 @@ youngjerky 开发过程当中与我的讨论
 * 添加一些菜单
 * 添加站点修改时的提示信息
 * <del>作业上传</del>
+* <del>Chrome浏览器支持</del>
 * 修改密码
 * 登出站点
 * <del>登陆站点</del>
